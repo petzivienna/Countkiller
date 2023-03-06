@@ -123,10 +123,10 @@ def setup():
     Item("rag", "an old strip of cloth", carrier_number = 0)
     Item("rag", "an old strip of cloth", carrier_number = 0)
     Item("bucket", "a bucket to put liquid in", location_string="farmer house", function=use_bucket)
-    Item("bread", "bread", location_string="farmer house", function=eat_bread)
-    Item("bread", "bread", location_string="farmer house", function=eat_bread)
-    Item("bread", "bread", location_string="farmer house", function=eat_bread)
-    Item("bread", "bread", location_string="farmer house", function=eat_bread)
+    Item("bread", "bread", location_string="farmer house", function=use_bread)
+    Item("bread", "bread", location_string="farmer house", function=use_bread)
+    Item("bread", "bread", location_string="farmer house", function=use_bread)
+    Item("bread", "bread", location_string="farmer house", function=use_bread)
     
 def delete_item(name):
     # delete item from inventory
@@ -153,8 +153,24 @@ def use_bucket():
         return
         
 
-def eat_bread():
-    pass
+def use_bread():
+    #check for bread
+    delete_item("bread")
+    Game.player.hunger -= 15
+    print("You eat a loaf of bread. You feel less hungry")
+    Game.player.hunger = max(0, Game.player.hunger)
+    return
+    
+def _drop(name):
+    for i, item in Game.items.items():
+        if item.carrier_number == Game.player.number and item.name == name:
+            item.carrier_number = None
+            item.location_string = Game.current_room.name
+            print("succesfully dropped:", item.name)
+            return
+    print("You have no such item in your inventory")
+    return
+    
     
   
     
@@ -216,8 +232,14 @@ def take(command):
         what = " ".join(command.split()[1:]).strip()
     else:
         what = None
-    obj = _take(what)
+    _take(what)
     
+def drop(command):
+    if " " in command:
+        what = " ".join(command.split()[1:]).strip()
+    else:
+        what = None
+    _drop(what)
    
         
 def use(command):
@@ -262,6 +284,9 @@ def mainloop():
         if command.startswith("pickup") or command.startswith("take"):
             take(command)
             look()
+        if command.startswith("drop"):
+            drop(command)
+            
             
                 
             
