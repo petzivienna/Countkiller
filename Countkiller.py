@@ -1,7 +1,7 @@
 class Game:
     """containers for everything"""
     monsters = {}
-    #items = {}
+    items = {}
     locations = {}
     player = None
     current_room = None
@@ -22,7 +22,7 @@ class Location:
         self.name = name
         Game.locations[self.name] = self
         self.description = description
-        self.items = []
+        #self.items = []
         self.directions = {"north":None,
                            "south":None,
                            "west":None,
@@ -58,27 +58,29 @@ class Monster:
         if location_string not in Game.locations:
             raise ValueError(f"unknow location: {location_string}")
         self.location_string = location_string
-        self.items = []
+        #self.items = []
         self.hp = hp
         for key, value in kwargs.items():
             self.key = value
         
 class Item:
-    #number = 0
+    number = 0
     
     def __init__(self, name, description, location_string=None, carrier_number=None, function=None):
-        #self.number = Item.number
-        #Item.number += 1
-        #Game.items[self.number] = self
+        self.number = Item.number
+        Item.number += 1
+        Game.items[self.number] = self
         if (location_string is None) and (carrier_number is None):
             raise ValueError("neither location_string nor carrier_number given")
         if (location_string is not None) and (carrier_number is not None):
             raise ValueError("loaction_string and carrier_number given. Only one is allowed")
    
-        if location_string is not None:
-            Game.locations[location_string].items.append(self)
-        if carrier_number is not None:
-            Game.monsters[carrier_number].items.append(self)
+        #if location_string is not None:
+        #    Game.locations[location_string].items.append(self)
+        #if carrier_number is not None:
+        #    Game.monsters[carrier_number].items.append(self)
+        self.location_string = location_string
+        self.carrier_number = carrier_number
         self.name = name
         self.description = description
         self.function = function
@@ -115,46 +117,57 @@ def setup():
     Item("pitchfork","a farmers pitchfork", location_string = "hay stack")
     Item("leather jacket","a light jacket which offers a little protection", location_string = "barn")
     Item("farmers clothes", "common farmers clothes", carrier_number = 0)
+    Item("rag", "an old strip of cloth", carrier_number = 0)
+    Item("rag", "an old strip of cloth", carrier_number = 0)
+    Item("rag", "an old strip of cloth", carrier_number = 0)
     Item("bucket", "a bucket to put liquid in", location_string="farmer house", function=use_bucket)
     Item("bread", "bread", location_string="farmer house", function=eat_bread)
+    Item("bread", "bread", location_string="farmer house", function=eat_bread)
+    Item("bread", "bread", location_string="farmer house", function=eat_bread)
+    Item("bread", "bread", location_string="farmer house", function=eat_bread)
     
-
+def delete_item(name):
+    # delete item from inventory
+    for i, item in Game.items.items():
+        if item.name == name and item.carrier_number == Game.player.number:
+            del Game.items[i]
+            return
+            #break
+            
 def use_bucket():
     if Game.current_room.name not in ("stables","well"):
         print("there is nothing to put in your bucket here")
         return
     if Game.current_room.name == "stables":
         print("You fill your Bucket with fresh cow milk")
+        # delete one bucket from inventory
+        delete_item("bucket")
+        Item("bucket with milk", "a bucket full of fresh cow milk", carrier_number = Game.player.number)
         return
     if Game.current_room.name == "well":
         print("you fill your bucket with some dirty water. Some slime swims in it")
+        delete_item("bucket")
+        Item("bucket with dirty water", "a bucket filled to the brim with disgusting, slimy water", carrier_number = Game.player.number)
         return
         
 
 def eat_bread():
     pass
     
-   
-def use_shack_key():
-    """if in garde, remove key and open shack door"""
-    if Game.current_room.name != "garden":
-        print("not possible in this location")
-        return
-    Game.player.items = [i for i in Game.player.items if i.name != "shack key"]
-    Game.locations["garden"].locked_doors["west"] = False
-    print("You open the door to the shack. The key disappears")
-    
+  
     
 def look():
     print("You are here:", Game.current_room.name)
     print("description:", Game.current_room.description)
-    print("items in this room are:", [i.name for i in Game.current_room.items])
+    #print("items in this room are:", [i.name for i in Game.current_room.items])
     print("directions from here:", [f"{k}:{v}" for k,v in Game.current_room.directions.items() if v is not None])
+    # todo quantity
     
 def inventory():
     print("you have this items:")
-    for index, item in enumerate(Game.player.items):
-        print(f"{index:<3} | {item.name:<20} | {item.description}")
+    for i, item in Game.items.items():
+        if item.carrier_number == Game.player.number:
+            print(f"item number {i:<3} | {item.name:<20} | {item.description}")
     
 def go(direction):
     # has current room a target room in this direction ?
@@ -174,53 +187,32 @@ def _take(name=None):
     """takes item with name name, offers menu if there are several of them
     returns class instance of Item"""
     if name is None:
-        candidates = [i for i in Game.current_room.items]
-    else:    
-        candidates = [i for i in Game.current_room.items if i.name.lower() == name.lower()]
-
-    if len(candidates) == 0:
+        print("please specify which item you want to take")
         return None
-    if len(candidates) == 1:
-        return candidates[0]
-    #print("candidates:", candidates)
-    while True:
-        # -- print list ---
-        print("what do you want to pick up? press number or 0 to exit")
-        ##max_name_length = max([len(i.name) for i in Game.current_room.items])
-        for index, item in enumerate(candidates, 1):
-            print(f"{index:<3} | {item.name} | {item.description}")
-        command2 = input(">>>").strip()
-        if command2 == "0":
-            print("you take nothing")
-            return None
-        try:
-            command2 = int(command2)
-        except:
-            print("bad input.")
-            continue
-        if not (0 < command2 <= len(candidates)):
-            print("impossible number")
-            continue
-        return candidates[command2-1]
+        
+    for i, item in Game.items.items():
+        if item.name == name and item.location_string == Game.current_room.name:
+            
+            print("you successfully pick up:", item.name)
+            item.location_string = None
+            item.carrier_number = Game.player.number
+            return i # item number
+    # item not found
+    print("There is no such item here to pick up")
+    return None
+        
+            
+
         
         
 def take(command):
- 
     if " " in command:
         what = " ".join(command.split()[1:]).strip()
     else:
         what = None
     obj = _take(what)
     
-    if obj is None:
-        if what is not None:
-            print("Not possible to take", what, "from this room")
-            return
-        print("Nothing taken")
-        return
-    Game.current_room.items.remove(obj)
-    Game.player.items.append(obj)
-    print("You sucessfully picked up", obj.name, "and put it in your inventory")
+   
         
 def use(command):
     what = " ".join(command.split()[1:]).strip()
@@ -229,20 +221,17 @@ def use(command):
     else:
         what = None
     if what is not None:            
-        # is item in inventory?
-        #print("itemstring:", itemstring)
-        obj = [i for i in Game.player.items if i.name == what]
-        if len(obj) != 1:
-            print(len(obj), "of your items can be used")
-            return
-        obj = obj[0]
-        if obj is None:
-            print("You don't have such an item in your inventory")
-            return
-        obj.use()
-    else:
-        print("please specify what object you want to use")
-        #todo: list of items with menu to choose 
+        for i, item in Game.items.items():
+            if item.name == what and item.carrier_number == Game.player.number:
+                item.use()
+                return
+        print("there is no such item in your inventory")
+        return
+    print("please specify item to use")
+                
+        
+        
+    
     
 def mainloop():
     look()
