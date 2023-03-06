@@ -120,7 +120,16 @@ def setup():
     
 
 def use_bucket():
-    pass
+    if Game.current_room.name not in ("stables","well"):
+        print("there is nothing to put in your bucket here")
+        return
+    if Game.current_room.name == "stables":
+        print("You fill your Bucket with fresh cow milk")
+        return
+    if Game.current_room.name == "well":
+        print("you fill your bucket with some dirty water. Some slime swims in it")
+        return
+        
 
 def eat_bread():
     pass
