@@ -60,6 +60,8 @@ class Monster:
         self.location_string = location_string
         #self.items = []
         self.hp = hp
+        self.hunger = 0
+        self.thirst = 0
         for key, value in kwargs.items():
             self.key = value
         
@@ -159,7 +161,11 @@ def eat_bread():
 def look():
     print("You are here:", Game.current_room.name)
     print("description:", Game.current_room.description)
-    #print("items in this room are:", [i.name for i in Game.current_room.items])
+    stuff = []
+    for i, item in Game.items.items():
+        if item.location_string == Game.current_room.name:
+            stuff.append(item.name)
+    print("items in this room:",stuff)
     print("directions from here:", [f"{k}:{v}" for k,v in Game.current_room.directions.items() if v is not None])
     # todo quantity
     
@@ -238,12 +244,15 @@ def mainloop():
     while True:
         #look()
         possible_directions = [k for k,v in Game.current_room.directions.items() if v is not None]
-        command = input(f"Location: {Game.current_room.name} directions: {possible_directions} >>>")
+        command = input(f"Location: {Game.current_room.name} directions: {possible_directions} hunger: {Game.player.hunger} thirst: {Game.player.thirst}\n >>>")
         command = command.lower().strip()
         if command in ("quit", "q", "exit"):
             break
         if command in ("north","west","south","east"):
             go(command)
+            Game.player.hunger += 1
+            Game.player.thirst += 2
+            look()
         if command == "look":
             look()
         if command == "inventory":
@@ -252,6 +261,7 @@ def mainloop():
             use(command)            
         if command.startswith("pickup") or command.startswith("take"):
             take(command)
+            look()
             
                 
             
