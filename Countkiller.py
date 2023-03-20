@@ -234,7 +234,12 @@ def get_description_of_item_name(item_name):
         
     
 def inventory():
-    print("you have these items:")
+    mystuff = [i for i, item in Game.items.items() if item.carrier_number == Game.player.number]
+    if len(mystuff) == 0:
+        print("you carry nothing")
+        return
+    
+    print("you have these items:\n")
     showdict = {}
     for i, item in Game.items.items():
         if item.carrier_number == Game.player.number:
@@ -244,11 +249,14 @@ def inventory():
                 showdict[item.name] += 1
             
     #--- print showdict ---
+    print("| name (amount)        | description")
+    print("+----------------------+--------------------------")
     for item_name in showdict:
         if showdict[item_name] == 1:
             print(f"| {item_name:<20} | {get_description_of_item_name(item_name)}")
         else:
             print(f"| {item_name+' x '+str(showdict[item_name]):<20} | {get_description_of_item_name(item_name)}")
+    print()
     
 def go(direction):
     # has current room a target room in this direction ?
