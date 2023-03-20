@@ -1,6 +1,7 @@
 from PIL import Image
 #how to install pil:
 #https://pillow.readthedocs.io/en/stable/installation.html
+## gimp effect: fx-foundry -> photo -> effects -> old photo
 
 im_original = Image.open("map1.png")
 im_fog = Image.open("map1_fog.png")
