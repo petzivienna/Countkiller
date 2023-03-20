@@ -126,7 +126,8 @@ def setup():
     Game.locations["the stables"].connect("north", "grain storage")
     Game.locations["village blacksmith"].connect("east", "grain storage")
     Game.locations["grain storage"].connect("south", "village well")
-    Game.locations["village well"].connect("west", "bonny stream")
+    Game.locations["village well"].connect("south", "bonny stream")
+    Game.locations["village well"].connect("east", "barn")
     Game.locations["farm well"].connect("south", "bonny stream")
     Game.locations["village fields"].connect("east", "farm well")
     Game.locations["village fields"].connect("south", "animal pens")
@@ -148,6 +149,9 @@ def setup():
     Item("bread", "bread", location_string="grain storage", function=use_bread)
     Item("bread", "bread", location_string="grain storage", function=use_bread)
     Item("bread", "bread", location_string="grain storage", function=use_bread)
+    Item("blacksmith hammer", "a blacksmith´s hammer", location_string="village blacksmith")
+    Item("shears", "some shears, made for the keeper of the village sheep", location_string="village blacksmith", function=use_shears)
+    Item("wheat", "all wheat the count has not taken or burned. Somewhat valuable", location_string="village fields")
     
 def delete_item(name):
     # delete item from inventory
@@ -158,7 +162,7 @@ def delete_item(name):
             #break
             
 def use_bucket():
-    if Game.current_room.name not in ("the stables","farm well", "village well"):
+    if Game.current_room.name not in ("the stables","farm well", "village well", "bonny stream"):
         print("there is nothing to put in your bucket here")
         return
     if Game.current_room.name == "the stables":
@@ -181,6 +185,12 @@ def use_bucket():
         print("you fill your bucket with fresh water.")
         delete_item("bucket")
         Item("bucket with water", "a bucket filled to the brim with fresh water", carrier_number = Game.player.number)
+        return
+
+def use_shears():
+    if Game.current_room.name == "animal pens":
+        print("you shear a sheep and take its fleece")
+        Item("fleece", "a sheeps fleece", carrier_number = Game.player.number)
         return
         
 
