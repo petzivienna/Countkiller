@@ -226,11 +226,29 @@ def look():
     print("directions from here:", [f"{k}:{v}" for k,v in Game.current_room.directions.items() if v is not None])
     # todo quantity
     
+def get_description_of_item_name(item_name):
+    for i, item in Game.items.items():
+        if item.name == item_name:
+            return item.description
+    return None
+        
+    
 def inventory():
-    print("you have this items:")
+    print("you have these items:")
+    showdict = {}
     for i, item in Game.items.items():
         if item.carrier_number == Game.player.number:
-            print(f"item number {i:<3} | {item.name:<20} | {item.description}")
+            if item.name not in showdict:
+                showdict[item.name] = 1
+            else:
+                showdict[item.name] += 1
+            
+    #--- print showdict ---
+    for item_name in showdict:
+        if showdict[item_name] == 1:
+            print(f"| {item_name:<20} | {get_description_of_item_name(item_name)}")
+        else:
+            print(f"| {item_name+' x '+str(showdict[item_name]):<20} | {get_description_of_item_name(item_name)}")
     
 def go(direction):
     # has current room a target room in this direction ?
