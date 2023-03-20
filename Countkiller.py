@@ -98,21 +98,39 @@ class Item:
 def setup():
     Game.current_room = Location("hay stack","a hay stack")
     Location("farmer house", "a common house")
-    Location("stables", "there are a few cows here. The evil lord replaced your horses with them")
-    Location("well", "the water in here looks dirty")
+    Location("the stables", "there are a few cows here. The evil lord replaced your horses with them")
+    Location("farm well", "the water in here looks dirty")
     Location("barn", "your farms barn")
     Location("town road", "the road between your farm and the nearest town")
-    Location("town", "a medium sized town. a lot of different people live here")
+    Location("iris town", "a medium sized town. a lot of different people live here")
     Location("forest", "a dark and unknown forest")
+    Location("village blacksmith", "the local blacksmith shop. The smith is gone")
+    Location("grain storage", "The evil Count has robbed this place, yet some bread is lying around")
+    Location("village well", "used by everyone, which has made it dirty")
+    Location("bonny stream", "a small stream with fast flowing water")
+    Location("animal pens", "some sheep are here")
+    Location("village fields", "your local villages fields")
+    
    
     Game.locations["hay stack"].connect("north", "farmer house")
-    Game.locations["hay stack"].connect("south", "well")
+    Game.locations["hay stack"].connect("south", "farm well")
     Game.locations["hay stack"].connect("east", "barn")
     Game.locations["hay stack"].connect("west", "town road")
-    Game.locations["barn"].connect("north", "stables")
+    Game.locations["barn"].connect("north", "the stables")
     Game.locations["barn"].connect("east", "forest")
-    Game.locations["farmer house"].connect("east", "stables")
-    Game.locations["town road"].connect("west", "town")
+    Game.locations["farmer house"].connect("east", "the stables")
+    Game.locations["town road"].connect("west", "iris town")
+    Game.locations["town road"].connect("south", "village fields")
+    Game.locations["town road"].connect("north", "village blacksmith")
+    Game.locations["farmer house"].connect("north", "village blacksmith")
+    Game.locations["the stables"].connect("north", "grain storage")
+    Game.locations["village blacksmith"].connect("east", "grain storage")
+    Game.locations["grain storage"].connect("south", "village well")
+    Game.locations["village well"].connect("west", "bonny stream")
+    Game.locations["farm well"].connect("south", "bonny stream")
+    Game.locations["village fields"].connect("east", "farm well")
+    Game.locations["village fields"].connect("south", "animal pens")
+    Game.locations["bonny stream"].connect("west", "animal pens")
     
     Game.player = Monster("Player", "You, the hero", "hay stack")
     
@@ -127,6 +145,9 @@ def setup():
     Item("bread", "bread", location_string="farmer house", function=use_bread)
     Item("bread", "bread", location_string="farmer house", function=use_bread)
     Item("bread", "bread", location_string="farmer house", function=use_bread)
+    Item("bread", "bread", location_string="grain storage", function=use_bread)
+    Item("bread", "bread", location_string="grain storage", function=use_bread)
+    Item("bread", "bread", location_string="grain storage", function=use_bread)
     
 def delete_item(name):
     # delete item from inventory
@@ -137,19 +158,29 @@ def delete_item(name):
             #break
             
 def use_bucket():
-    if Game.current_room.name not in ("stables","well"):
+    if Game.current_room.name not in ("the stables","farm well", "village well"):
         print("there is nothing to put in your bucket here")
         return
-    if Game.current_room.name == "stables":
+    if Game.current_room.name == "the stables":
         print("You fill your Bucket with fresh cow milk")
         # delete one bucket from inventory
         delete_item("bucket")
         Item("bucket with milk", "a bucket full of fresh cow milk", carrier_number = Game.player.number)
         return
-    if Game.current_room.name == "well":
+    if Game.current_room.name == "farm well":
         print("you fill your bucket with some dirty water. Some slime swims in it")
         delete_item("bucket")
         Item("bucket with dirty water", "a bucket filled to the brim with disgusting, slimy water", carrier_number = Game.player.number)
+        return
+    if Game.current_room.name == "village well":
+        print("you fill your bucket with some disgusting looking water.")
+        delete_item("bucket")
+        Item("bucket with dirty water", "a bucket filled to the brim with disgusting, slimy water", carrier_number = Game.player.number)
+        return
+    if Game.current_room.name == "bonny stream":
+        print("you fill your bucket with fresh water.")
+        delete_item("bucket")
+        Item("bucket with water", "a bucket filled to the brim with fresh water", carrier_number = Game.player.number)
         return
         
 
