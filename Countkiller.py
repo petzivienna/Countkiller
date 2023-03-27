@@ -5,6 +5,7 @@ class Game:
     locations = {}
     player = None
     current_room = None
+    game_over = False
 
 
 class Location:
@@ -73,7 +74,7 @@ class Monster:
 class Item:
     number = 0
     
-    def __init__(self, name, description, location_string=None, carrier_number=None, function=None, edible=False):
+    def __init__(self, name, description, location_string=None, carrier_number=None, function=None, edible=False, drinkable=False):
         self.number = Item.number
         Item.number += 1
         Game.items[self.number] = self
@@ -90,6 +91,7 @@ class Item:
         self.carrier_number = carrier_number
         self.name = name
         self.edible = edible
+        self.drinkable = drinkable
         self.description = description
         self.function = function
         
@@ -181,22 +183,22 @@ def use_bucket():
         print("You fill your Bucket with fresh cow milk")
         # delete one bucket from inventory
         delete_item("bucket")
-        Item("bucket with milk", "a bucket full of fresh cow milk", carrier_number = Game.player.number)
+        Item("bucket with milk", "a bucket full of fresh cow milk", carrier_number = Game.player.number,drinkable=True, function=use_bucket_with_milk)
         return
     if Game.current_room.name == "farm well":
         print("you fill your bucket with some dirty water. Some slime swims in it")
         delete_item("bucket")
-        Item("bucket with dirty water", "a bucket filled to the brim with disgusting, slimy water", carrier_number = Game.player.number)
+        Item("bucket with dirty water", "a bucket filled to the brim with disgusting, slimy water", carrier_number = Game.player.number,drinkable=True, function=use_bucket_with_dirty_water)
         return
     if Game.current_room.name == "village well":
         print("you fill your bucket with some disgusting looking water.")
         delete_item("bucket")
-        Item("bucket with dirty water", "a bucket filled to the brim with disgusting, slimy water", carrier_number = Game.player.number)
+        Item("bucket with dirty water", "a bucket filled to the brim with disgusting, slimy water", carrier_number = Game.player.number,drinkable=True, function=use_bucket_with_dirty_water)
         return
     if Game.current_room.name == "bonny stream":
         print("you fill your bucket with fresh water.")
         delete_item("bucket")
-        Item("bucket with water", "a bucket filled to the brim with fresh water", carrier_number = Game.player.number)
+        Item("bucket with water", "a bucket filled to the brim with fresh water", carrier_number = Game.player.number,drinkable=True, function=use_bucket_with_water)
         return
 
 def use_shears():
@@ -212,6 +214,29 @@ def use_bread():
     Game.player.hunger -= 15
     print("You eat a loaf of bread. You feel less hungry")
     Game.player.hunger = max(0, Game.player.hunger)
+    return
+    
+def use_bucket_with_water():
+    delete_item("bucket with water")
+    Game.player.thirst -= 25
+    print("you drink the whole bucket of water. You feel much less thirsty")
+    Item("bucket", "a bucket to put liquid in", carrier_number = 0, function = use_bucket)
+    Game.player.thirst = max(0, Game.player.thirst)
+    return
+
+def use_bucket_with_dirty_water():
+    delete_item("bucket with dirty water")
+    Game.player.thirst -= 25
+    print("you drink the whole bucket of dirty water. Suddenly, you start to feel dizzy, and everything goes dark...")
+    Game.player.thirst = max(0, Game.player.thirst)
+    Game.game_over = True
+    
+def use_bucket_with_milk():
+    delete_item("bucket with milk")
+    Game.player.thirst -= 30
+    print("you drink the whole bucket of delicious milk. You feel much less thirsty")
+    Item("bucket", "a bucket to put liquid in", carrier_number = 0, function = use_bucket)
+    Game.player.thirst = max(0, Game.player.thirst)
     return
     
 def _drop(name):
@@ -239,6 +264,23 @@ def _eat(name=None):
             return
         item =myfood[0]
         item.use() # use is the same as eat
+        delete_item(name)
+        
+def _drink(name=None):
+        if name is None:
+            print("please specify witch of your items you want to drink")
+            return
+        # detect player items
+        mystuff = [i for i, item in Game.items.items() if item.carrier_number == Game.player.number and item.name == name]
+        if len(mystuff) == 0:
+            print("You do not own something like that")
+            return
+        mydrink = [item for item in Game.items.values() if item.carrier_number == Game.player.number and item.name == name and item.drinkable]
+        if len(mydrink) == 0:
+            print(f"You try to drink {name} but it is not drinkable")
+            return
+        item =mydrink[0]
+        item.use() # use is the same as drink
         delete_item(name)
         
   
@@ -325,6 +367,13 @@ def eat(command):
     else:
         what = None
     _eat(what)
+    
+def drink(command):
+    if " " in command:
+        what = " ".join(command.split()[1:]).strip()
+    else:
+        what = None
+    _drink(what)
         
         
 def take(command):
@@ -363,7 +412,7 @@ def use(command):
     
 def mainloop():
     look()
-    while True:
+    while not Game.game_over:
         #look()
         possible_directions = [k for k,v in Game.current_room.directions.items() if v is not None]
         command = input(f"Location: {Game.current_room.name} directions: {possible_directions} hunger: {Game.player.hunger} thirst: {Game.player.thirst}\n >>>")
@@ -388,6 +437,8 @@ def mainloop():
             look()
         if command.startswith("drop"):
             drop(command)
+        if command.startswith("drink"):
+            drink(command)
             
             
                 
