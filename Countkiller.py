@@ -68,7 +68,7 @@ class Monster:
 class Item:
     number = 0
     
-    def __init__(self, name, description, location_string=None, carrier_number=None, function=None):
+    def __init__(self, name, description, location_string=None, carrier_number=None, function=None, edible=False):
         self.number = Item.number
         Item.number += 1
         Game.items[self.number] = self
@@ -84,8 +84,10 @@ class Item:
         self.location_string = location_string
         self.carrier_number = carrier_number
         self.name = name
+        self.edible = edible
         self.description = description
         self.function = function
+        
         
     def use(self):
         if self.function is not None:
@@ -142,13 +144,13 @@ def setup():
     Item("rag", "an old strip of cloth", carrier_number = 0)
     Item("rag", "an old strip of cloth", carrier_number = 0)
     Item("bucket", "a bucket to put liquid in", location_string="farmer house", function=use_bucket)
-    Item("bread", "bread", location_string="farmer house", function=use_bread)
-    Item("bread", "bread", location_string="farmer house", function=use_bread)
-    Item("bread", "bread", location_string="farmer house", function=use_bread)
-    Item("bread", "bread", location_string="farmer house", function=use_bread)
-    Item("bread", "bread", location_string="grain storage", function=use_bread)
-    Item("bread", "bread", location_string="grain storage", function=use_bread)
-    Item("bread", "bread", location_string="grain storage", function=use_bread)
+    Item("bread", "bread", location_string="farmer house", function=use_bread, edible=True)
+    Item("bread", "bread", location_string="farmer house", function=use_bread, edible=True)
+    Item("bread", "bread", location_string="farmer house", function=use_bread, edible=True)
+    Item("bread", "bread", location_string="farmer house", function=use_bread, edible=True)
+    Item("bread", "bread", location_string="grain storage", function=use_bread, edible=True)
+    Item("bread", "bread", location_string="grain storage", function=use_bread, edible=True)
+    Item("bread", "bread", location_string="grain storage", function=use_bread, edible=True)
     Item("blacksmith hammer", "a blacksmith´s hammer", location_string="village blacksmith")
     Item("shears", "some shears, made for the keeper of the village sheep", location_string="village blacksmith", function=use_shears)
     Item("wheat", "all wheat the count has not taken or burned. Somewhat valuable", location_string="village fields")
@@ -212,7 +214,23 @@ def _drop(name):
     print("You have no such item in your inventory")
     return
     
-    
+def _eat(name=None):
+        if name is None:
+            print("please specify witch your items you want to eat")
+            return
+        # detect player items
+        mystuff = [i for i, item in Game.items.items() if item.carrier_number == Game.player.number and item.name == name]
+        if len(mystuff) == 0:
+            print("You do not possess such an item")
+            return
+        myfood = [item for item in Game.items.values() if item.carrier_number == Game.player.number and item.name == name and item.edible]
+        if len(myfood) == 0:
+            print(f"You try to eat {name} but it is not edible")
+            return
+        item =myfood[0]
+        item.use() # use is the same as eat
+        delete_item(name)
+        
   
     
 def look():
@@ -291,7 +309,12 @@ def _take(name=None):
     return None
         
             
-
+def eat(command):
+    if " " in command:
+        what = " ".join(command.split()[1:]).strip()
+    else:
+        what = None
+    _eat(what)
         
         
 def take(command):
@@ -347,7 +370,9 @@ def mainloop():
         if command == "inventory":
             inventory()
         if command.startswith("use"):
-            use(command)            
+            use(command)    
+        if command.startswith("eat"):
+            eat(command)
         if command.startswith("pickup") or command.startswith("take"):
             take(command)
             look()
