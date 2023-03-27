@@ -14,12 +14,17 @@ class Location:
                "south":"north",
                "west":"east",
                "east":"west",
+               "northeast":"southwest",
+               "southwest":"northeast",
+               "southeast":"northwest",
+               "northwest":"southeast",
                }
     
-    def __init__(self,name, description):
+    def __init__(self,name, description, area="village"):
         #self.number = Location.number
         #Location.number += 1
         self.name = name
+        self.area = area
         Game.locations[self.name] = self
         self.description = description
         #self.items = []
@@ -154,6 +159,11 @@ def setup():
     Item("blacksmith hammer", "a blacksmith´s hammer", location_string="village blacksmith")
     Item("shears", "some shears, made for the keeper of the village sheep", location_string="village blacksmith", function=use_shears)
     Item("wheat", "all wheat the count has not taken or burned. Somewhat valuable", location_string="village fields")
+    Item("gold coin", "the most valuable of the official coins of the kingdom", location_string="town road")
+    Item("silver coin", "the second most valuable of the official coins of the kingdom", location_string="town road")
+    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="town road")
+    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="town road")
+    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="town road")
     
 def delete_item(name):
     # delete item from inventory
