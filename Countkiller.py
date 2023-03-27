@@ -122,25 +122,32 @@ def setup():
     
    
     Game.locations["hay stack"].connect("north", "farmer house")
-    Game.locations["hay stack"].connect("south", "farm well")
     Game.locations["hay stack"].connect("east", "barn")
+    Game.locations["hay stack"].connect("south", "farm well")
     Game.locations["hay stack"].connect("west", "town road")
+    
+    Game.locations["farmer house"].connect("east", "the stables")
+    Game.locations["farmer house"].connect("west", "village well")
+    Game.locations["farmer house"].connect("north", "fields")
+    
+    Game.locations["fields"].connect("west", "black smith")
+    Game.locations["fields"].connect("east", "grain storage")
+    
     Game.locations["barn"].connect("north", "the stables")
     Game.locations["barn"].connect("east", "dark forest")
-    Game.locations["farmer house"].connect("east", "the stables")
+    Game.locations["barn"].connect("south", "bonny stream")
+    
+    Game.locations["farm well"].connect("east", "bonny stream")
+    Game.locations["farm well"].connect("west", "animal pens")
+    
+    Game.locations["town road"].connect("north", "village well")
+    Game.locations["town road"].connect("south", "animal pens")
     Game.locations["town road"].connect("west", "iris town")
-    Game.locations["town road"].connect("south", "village fields")
-    Game.locations["town road"].connect("north", "village blacksmith")
-    Game.locations["farmer house"].connect("north", "village blacksmith")
+    
+    Game.locations["village well"].connect("north", "black smith")
+    
     Game.locations["the stables"].connect("north", "grain storage")
-    Game.locations["village blacksmith"].connect("east", "grain storage")
-    Game.locations["grain storage"].connect("south", "village well")
-    Game.locations["village well"].connect("south", "bonny stream")
-    Game.locations["village well"].connect("east", "barn")
-    Game.locations["farm well"].connect("south", "bonny stream")
-    Game.locations["village fields"].connect("east", "farm well")
-    Game.locations["village fields"].connect("south", "animal pens")
-    Game.locations["bonny stream"].connect("west", "animal pens")
+    
     
     Game.player = Monster("Player", "You, the hero", "hay stack")
     
