@@ -128,10 +128,10 @@ def setup():
     
     Game.locations["farmer house"].connect("east", "the stables")
     Game.locations["farmer house"].connect("west", "village well")
-    Game.locations["farmer house"].connect("north", "fields")
+    Game.locations["farmer house"].connect("north", "village fields")
     
-    Game.locations["fields"].connect("west", "black smith")
-    Game.locations["fields"].connect("east", "grain storage")
+    Game.locations["village fields"].connect("west", "village blacksmith")
+    Game.locations["village fields"].connect("east", "grain storage")
     
     Game.locations["barn"].connect("north", "the stables")
     Game.locations["barn"].connect("east", "dark forest")
@@ -144,7 +144,7 @@ def setup():
     Game.locations["town road"].connect("south", "animal pens")
     Game.locations["town road"].connect("west", "iris town")
     
-    Game.locations["village well"].connect("north", "black smith")
+    Game.locations["village well"].connect("north", "village blacksmith")
     
     Game.locations["the stables"].connect("north", "grain storage")
     
