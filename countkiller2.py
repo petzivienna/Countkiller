@@ -372,7 +372,14 @@ def use(what):
     return
 
                 
-        
+def drop(what):
+    for i, item in Game.items.items():
+        if item.name == what and item.carrier_number == Game.player.number:
+            print("you drop on the floor:", item.name)
+            item.location_string = Game.current_room.name
+            item.carrier_number = None
+            return
+    print("You do not carry such an item with you")     
         
     
     
