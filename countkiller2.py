@@ -114,10 +114,10 @@ def setup():
     Location("farmer house", "a common house")
     Location("the stables", "there are a few cows here. The evil lord replaced your horses with them")
     Location("farm well", "the water in here looks dirty")
-    Location("barn", "your farms barn")
-    Location("town road", "the road between your farm and the nearest town")
-    Location("iris town", "a medium sized town. a lot of different people live here")
-    Location("dark forest", "a dark and unknown forest")
+    Location("the barn", "your farms the barn")
+    Location("iris town road", "the road between your farm and the nearest town")
+    Location("iris town gate", "a medium sized town. a lot of different people live here")
+    Location("edge of the dark forest", "a dark and unknown forest")
     Location("village blacksmith", "the local blacksmith shop. The smith is gone")
     Location("grain storage", "The evil Count has robbed this place, yet some bread is lying around")
     Location("village well", "used by everyone, which has made it dirty")
@@ -127,9 +127,9 @@ def setup():
     
    
     Game.locations["hay stack"].connect("north", "farmer house")
-    Game.locations["hay stack"].connect("east", "barn")
+    Game.locations["hay stack"].connect("east", "the barn")
     Game.locations["hay stack"].connect("south", "farm well")
-    Game.locations["hay stack"].connect("west", "town road")
+    Game.locations["hay stack"].connect("west", "iris town road")
     
     Game.locations["farmer house"].connect("east", "the stables")
     Game.locations["farmer house"].connect("west", "village well")
@@ -138,16 +138,16 @@ def setup():
     Game.locations["village fields"].connect("west", "village blacksmith")
     Game.locations["village fields"].connect("east", "grain storage")
     
-    Game.locations["barn"].connect("north", "the stables")
-    Game.locations["barn"].connect("east", "dark forest")
-    Game.locations["barn"].connect("south", "bonny stream")
+    Game.locations["the barn"].connect("north", "the stables")
+    Game.locations["the barn"].connect("east", "edge of the dark forest")
+    Game.locations["the barn"].connect("south", "bonny stream")
     
     Game.locations["farm well"].connect("east", "bonny stream")
     Game.locations["farm well"].connect("west", "animal pens")
     
-    Game.locations["town road"].connect("north", "village well")
-    Game.locations["town road"].connect("south", "animal pens")
-    Game.locations["town road"].connect("west", "iris town")
+    Game.locations["iris town road"].connect("north", "village well")
+    Game.locations["iris town road"].connect("south", "animal pens")
+    Game.locations["iris town road"].connect("west", "iris town gate")
     
     Game.locations["village well"].connect("north", "village blacksmith")
     
@@ -157,7 +157,7 @@ def setup():
     Game.player = Monster("Player", "You, the hero", "hay stack")
     
     Item("pitchfork","a farmers pitchfork", location_string = "hay stack")
-    Item("leather jacket","a light jacket which offers a little protection", location_string = "barn")
+    Item("leather jacket","a light jacket which offers a little protection", location_string = "the barn")
     Item("farmers clothes", "common farmers clothes", carrier_number = 0)
     Item("rag", "an old strip of cloth", carrier_number = 0)
     Item("rag", "an old strip of cloth", carrier_number = 0)
@@ -173,11 +173,11 @@ def setup():
     Item("blacksmith hammer", "a blacksmith´s hammer", location_string="village blacksmith")
     Item("shears", "some shears, made for the keeper of the village sheep", location_string="village blacksmith", function=use_shears)
     Item("wheat", "all wheat the count has not taken or burned. Somewhat valuable", location_string="village fields")
-    Item("gold coin", "the most valuable of the official coins of the kingdom", location_string="town road")
-    Item("silver coin", "the second most valuable of the official coins of the kingdom", location_string="town road")
-    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="town road")
-    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="town road")
-    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="town road")
+    Item("gold coin", "the most valuable of the official coins of the kingdom", location_string="iris town road")
+    Item("silver coin", "the second most valuable of the official coins of the kingdom", location_string="iris town road")
+    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="iris town road")
+    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="iris town road")
+    Item("copper coin", "the least valuable of the official coins of the kingdom", location_string="iris town road")
     
 def delete_item(name):
     # delete item from inventory
